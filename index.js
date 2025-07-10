@@ -24,7 +24,11 @@ app.use(express.json());
 // }));
 
 
-const allowedOrigins = ['http://localhost:3000', 'https://ctd-backend.onrender.com'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://react.creativethinkdesign.com',
+  'https://ctd-backend.onrender.com'
+];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -58,21 +62,21 @@ app.get('/services_content', async (req, res) => {
     res.status(500).json({ error: error.message });   // 👈 shows in browser/postman
   }
 });
- 
-app.post('/form_request', async (req, res) => {
-    const { name, number, email, message } = req.body;
-    console.log(req.body, "Request Body");
 
-    try {
-        const result = await pool.query(
-            'INSERT INTO request_form (name, number, email, message) VALUES ($1, $2, $3, $4) RETURNING *',
-            [name, number, email, message]
-        ); 
-        res.status(201).json({ message: 'Form submitted successfully', data: result.rows[0] });
-    } catch (err) {
-        console.error('Error inserting into request_form:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+app.post('/form_request', async (req, res) => {
+  const { name, number, email, message } = req.body;
+  console.log(req.body, "Request Body");
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO request_form (name, number, email, message) VALUES ($1, $2, $3, $4) RETURNING *',
+      [name, number, email, message]
+    );
+    res.status(201).json({ message: 'Form submitted successfully', data: result.rows[0] });
+  } catch (err) {
+    console.error('Error inserting into request_form:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 
