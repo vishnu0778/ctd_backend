@@ -1,10 +1,16 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import pg from 'pg';
+import cors from 'cors';
+
 
 dotenv.config();
 
 const { Pool } = pg;
+app.use(cors({
+  origin: 'https://ctd-backend.onrender.com', // Allow frontend
+  credentials: true
+}));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
