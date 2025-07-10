@@ -18,8 +18,22 @@ const pool = new Pool({
 const app = express();
 app.use(express.json());
 
+// app.use(cors({
+//   origin: 'https://ctd-backend.onrender.com', // Allow frontend
+//   credentials: true
+// }));
+
+
+const allowedOrigins = ['http://localhost:3000', 'https://ctd-backend.onrender.com'];
+
 app.use(cors({
-  origin: 'https://ctd-backend.onrender.com', // Allow frontend
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
