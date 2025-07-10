@@ -17,15 +17,61 @@ const app = express();
 app.use(express.json());
 
 
-app.get('/otherservice', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM otherservice');
-    res.json(result.rows);
-  } catch (error) {
-    console.error('❌ Query error:', error.message); // 👈 shows the actual reason
-    res.status(500).json({ error: error.message });   // 👈 shows in browser/postman
-  }
+// app.get('/otherservice', async (req, res) => {
+//   try {
+//     const result = await pool.query('SELECT * FROM otherservice');
+//     res.json(result.rows);
+//   } catch (error) {
+//     console.error('❌ Query error:', error.message); // 👈 shows the actual reason
+//     res.status(500).json({ error: error.message });   // 👈 shows in browser/postman
+//   }
+// });
+
+
+// ✅ Route to get data from services_content table
+app.get('/services_content', async (req, res) => {
+    try {
+        const result = await client.query('SELECT * FROM services_content');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error querying services_content:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
+
+
+// ✅ Route to get data from otherService table
+app.get('/otherService', async (req, res) => {
+    try {
+        const result = await client.query('SELECT * FROM otherService');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error querying otherService:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+ 
+
+
+app.post('/form_request', async (req, res) => {
+    const { name, number, email, message } = req.body;
+    console.log(req.body, "Request Body");
+
+    try {
+        const result = await client.query(
+            'INSERT INTO request_form (name, number, email, message) VALUES ($1, $2, $3, $4) RETURNING *',
+            [name, number, email, message]
+        ); 
+        res.status(201).json({ message: 'Form submitted successfully', data: result.rows[0] });
+    } catch (err) {
+        console.error('Error inserting into request_form:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
 
 
 const PORT = process.env.PORT || 3000;
