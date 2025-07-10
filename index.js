@@ -7,10 +7,6 @@ import cors from 'cors';
 dotenv.config();
 
 const { Pool } = pg;
-app.use(cors({
-  origin: 'https://ctd-backend.onrender.com', // Allow frontend
-  credentials: true
-}));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -22,6 +18,10 @@ const pool = new Pool({
 const app = express();
 app.use(express.json());
 
+app.use(cors({
+  origin: 'https://ctd-backend.onrender.com', // Allow frontend
+  credentials: true
+}));
 
 app.get('/otherservice', async (req, res) => {
   try {
