@@ -3,9 +3,7 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
+ 
 dotenv.config();
 
 const { Pool } = pg;
@@ -16,10 +14,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// ✅ Path setup for ES modules (__dirname)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+ 
 // ✅ Express app
 const app = express();
 app.use(express.json());
@@ -86,21 +81,7 @@ app.post('/form_request', async (req, res) => {
 });
 
 
-
-// ✅ Serve frontend React build
-app.use(express.static(path.join(__dirname, 'build')));
-
-// ✅ For React Router support (SPA)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-
-
-
-
-
-
-
+  
 
 
 // ✅ Start the server
