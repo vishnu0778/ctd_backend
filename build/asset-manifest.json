@@ -1,0 +1,34 @@
+{
+  "files": {
+    "main.css": "/static/css/main.3428ae62.css",
+    "main.js": "/static/js/main.e6d192e5.js",
+    "static/media/supportbg.jpg": "/static/media/supportbg.247e4965e1d75469f6ff.jpg",
+    "static/media/about_image.png": "/static/media/about_image.1e2096fbf78cc5a2f1c3.png",
+    "static/media/slide1.jpg": "/static/media/slide1.cefcd5788d8071bf026a.jpg",
+    "static/media/pro_team.jpg": "/static/media/pro_team.bcc3c5a8efdf230214f8.jpg",
+    "static/media/newsimg.jpg": "/static/media/newsimg.01cdaf3652fc449b8495.jpg",
+    "static/media/books.jpg": "/static/media/books.45912ee76e09fa5cc056.jpg",
+    "static/media/rahul.png": "/static/media/rahul.d58b6ad7b45c9b065d92.png",
+    "static/media/pulkit_profile.png": "/static/media/pulkit_profile.d8e464a8aee60b2d0d94.png",
+    "static/media/logo.png": "/static/media/logo.7157a1863e78bd123b12.png",
+    "static/media/webimg.jpg": "/static/media/webimg.4469bc0e1bef962ff5ad.jpg",
+    "static/media/packagingimg.jpg": "/static/media/packagingimg.254f95d3a0cbbb4144cf.jpg",
+    "static/media/corporateimg.jpg": "/static/media/corporateimg.564f97b272c403d52b7e.jpg",
+    "static/media/slick.svg": "/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/static/media/slick.295183786cd8a1389865.woff",
+    "static/media/consultation_icon.svg": "/static/media/consultation_icon.4ef405f83934cf6a02e51a19c6931731.svg",
+    "index.html": "/index.html",
+    "static/media/reasonable_icon.svg": "/static/media/reasonable_icon.10d8c7aedc9b11432c2c68012b5f399f.svg",
+    "static/media/experienced_icon.svg": "/static/media/experienced_icon.cd6e99463c44d59b97ae1bcbc499f579.svg",
+    "static/media/guaranteed_icon.svg": "/static/media/guaranteed_icon.681c10cf80944022cea5e08b7a6c27b2.svg",
+    "static/media/bullet_arror_right.svg": "/static/media/bullet_arror_right.258993218ed31fc02aaf4204534aac16.svg",
+    "main.3428ae62.css.map": "/static/css/main.3428ae62.css.map",
+    "main.e6d192e5.js.map": "/static/js/main.e6d192e5.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3428ae62.css",
+    "static/js/main.e6d192e5.js"
+  ]
+}

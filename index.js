@@ -3,23 +3,28 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
 const { Pool } = pg;
 
+// ✅ PostgreSQL Connection (Render-safe)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false // Render requires SSL
-  }
+  ssl: { rejectUnauthorized: false }
 });
 
+// ✅ Path setup for ES modules (__dirname)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ✅ Express app
 const app = express();
 app.use(express.json());
- 
 
+// ✅ CORS configuration
 const allowedOrigins = [
   'http://localhost:3000',
   'http://react.creativethinkdesign.com',
@@ -37,51 +42,57 @@ app.use(cors({
   credentials: true
 }));
 
-
-// ✅ Rate Limiter
+// ✅ Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 mins
-  max: 100, // limit each IP to 100 requests
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100                  // Limit each IP to 100 requests
 });
 app.use(limiter);
 
+// ✅ API Routes
 
 app.get('/otherservice', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM otherservice');
     res.json(result.rows);
   } catch (error) {
-    console.error('❌ Query error:', error.message); // 👈 shows the actual reason
-    res.status(500).json({ error: error.message });   // 👈 shows in browser/postman
+    console.error('❌ Error in /otherservice:', error.message);
+    res.status(500).json({ error: 'Database error' });
   }
 });
-
-
 
 app.get('/services_content', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM services_content');
     res.json(result.rows);
   } catch (error) {
-    console.error('❌ Query error:', error.message); // 👈 shows the actual reason
-    res.status(500).json({ error: error.message });   // 👈 shows in browser/postman
+    console.error('❌ Error in /services_content:', error.message);
+    res.status(500).json({ error: 'Database error' });
   }
 });
 
 app.post('/form_request', async (req, res) => {
   const { name, number, email, message } = req.body;
-  console.log(req.body, "Request Body");
-
   try {
     const result = await pool.query(
       'INSERT INTO request_form (name, number, email, message) VALUES ($1, $2, $3, $4) RETURNING *',
       [name, number, email, message]
     );
-    res.status(201).json({ message: 'Form submitted successfully', data: result.rows[0] });
+    res.status(201).json({ message: 'Form submitted', data: result.rows[0] });
   } catch (err) {
-    console.error('Error inserting into request_form:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('❌ Error in /form_request:', err.message);
+    res.status(500).json({ error: 'Insert failed' });
   }
+});
+
+
+
+// ✅ Serve frontend React build
+app.use(express.static(path.join(__dirname, 'build')));
+
+// ✅ For React Router support (SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 
@@ -90,7 +101,10 @@ app.post('/form_request', async (req, res) => {
 
 
 
+
+
+// ✅ Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
