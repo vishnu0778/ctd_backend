@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import pg from 'pg';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 
 
 dotenv.config();
@@ -17,12 +18,7 @@ const pool = new Pool({
 
 const app = express();
 app.use(express.json());
-
-// app.use(cors({
-//   origin: 'https://ctd-backend.onrender.com', // Allow frontend
-//   credentials: true
-// }));
-
+ 
 
 const allowedOrigins = [
   'http://localhost:3000',
@@ -40,6 +36,15 @@ app.use(cors({
   },
   credentials: true
 }));
+
+
+// ✅ Rate Limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 mins
+  max: 100, // limit each IP to 100 requests
+});
+app.use(limiter);
+
 
 app.get('/otherservice', async (req, res) => {
   try {
