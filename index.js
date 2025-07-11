@@ -8,6 +8,9 @@ dotenv.config();
 
 const { Pool } = pg;
 
+// app.set('trust proxy', 1);
+
+
 // ✅ PostgreSQL Connection (Render-safe)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -37,20 +40,23 @@ app.use(cors({
   credentials: true
 }));
 
-// ✅ Rate Limiting
-const limiter = rateLimit({
+
+// ✅ General API limiter (e.g. for public GET routes)
+const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100                  // Limit each IP to 100 requests
+  max: 500, // more generous
+  message: "Too many requests, try again later."
 });
-// app.use(limiter);
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(limiter);
-}
+// ✅ Strict limiter (e.g. for POST /form_request to prevent spam)
+const formLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10, // allow only 10 submissions per 15 minutes
+  message: "Too many form submissions, please try again later."
+});
 
-// ✅ API Routes
-
-app.get('/otherservice', limiter, async (req, res) => {
+// ✅ Apply limiters only where needed
+app.get('/otherservice', generalLimiter, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM otherservice');
     res.json(result.rows);
@@ -60,7 +66,7 @@ app.get('/otherservice', limiter, async (req, res) => {
   }
 });
 
-app.get('/services_content', limiter, async (req, res) => {
+app.get('/services_content', generalLimiter, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM services_content');
     res.json(result.rows);
@@ -70,7 +76,7 @@ app.get('/services_content', limiter, async (req, res) => {
   }
 });
 
-app.post('/form_request', limiter, async (req, res) => {
+app.post('/form_request', formLimiter, async (req, res) => {
   const { name, number, email, message } = req.body;
   try {
     const result = await pool.query(
@@ -83,7 +89,6 @@ app.post('/form_request', limiter, async (req, res) => {
     res.status(500).json({ error: 'Insert failed' });
   }
 });
-
 
 
 
