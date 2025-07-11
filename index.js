@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
- 
+
 dotenv.config();
 
 const { Pool } = pg;
@@ -14,7 +14,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
- 
+
 // ✅ Express app
 const app = express();
 app.use(express.json());
@@ -42,11 +42,15 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100                  // Limit each IP to 100 requests
 });
-app.use(limiter);
+// app.use(limiter);
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(limiter);
+}
 
 // ✅ API Routes
 
-app.get('/otherservice', async (req, res) => {
+app.get('/otherservice', limiter, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM otherservice');
     res.json(result.rows);
@@ -56,7 +60,7 @@ app.get('/otherservice', async (req, res) => {
   }
 });
 
-app.get('/services_content', async (req, res) => {
+app.get('/services_content', limiter, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM services_content');
     res.json(result.rows);
@@ -66,7 +70,7 @@ app.get('/services_content', async (req, res) => {
   }
 });
 
-app.post('/form_request', async (req, res) => {
+app.post('/form_request', limiter, async (req, res) => {
   const { name, number, email, message } = req.body;
   try {
     const result = await pool.query(
@@ -81,7 +85,7 @@ app.post('/form_request', async (req, res) => {
 });
 
 
-  
+
 
 
 // ✅ Start the server
