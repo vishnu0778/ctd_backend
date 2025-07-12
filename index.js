@@ -48,15 +48,22 @@ const generalLimiter = rateLimit({
   message: "Too many requests, try again later."
 });
 
-// ✅ Strict limiter (e.g. for POST /form_request to prevent spam)
-const formLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10, // allow only 10 submissions per 15 minutes
-  message: "Too many form submissions, please try again later."
+// ✅ For general GET routes (like fetching data)
+const getLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 500, // Allow more because many assets or users hit GETs
+  message: "Too many GET requests. Please slow down."
+});
+
+// ✅ For POST routes (like contact forms)
+const postLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Stricter to prevent abuse
+  message: "Too many form submissions. Try again later."
 });
 
 // ✅ Apply limiters only where needed
-app.get('/otherservice', generalLimiter, async (req, res) => {
+app.get('/otherservice', getLimiter, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM otherservice');
     res.json(result.rows);
@@ -66,7 +73,7 @@ app.get('/otherservice', generalLimiter, async (req, res) => {
   }
 });
 
-app.get('/services_content', generalLimiter, async (req, res) => {
+app.get('/services_content', getLimiter, async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM services_content');
     res.json(result.rows);
@@ -76,7 +83,7 @@ app.get('/services_content', generalLimiter, async (req, res) => {
   }
 });
 
-app.post('/form_request', formLimiter, async (req, res) => {
+app.post('/form_request', postLimiter, async (req, res) => {
   const { name, number, email, message } = req.body;
   try {
     const result = await pool.query(
