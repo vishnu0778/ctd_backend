@@ -75,6 +75,34 @@ app.get('/services_content', getLimiter, async (req, res) => {
   }
 });
 
+
+const sendEmail = async (name, email) => {
+  try {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS, // App password from Google
+        },
+    });
+
+    const mailOptions = {
+      from: `"${name}" <${email}>`,
+      to: 'creativethinkdesign4u@gmail.com', // Your email to receive messages
+      subject: "subject" || 'New Message',
+      html: `<p><strong>Name:</strong> ${name}</p>
+             <p><strong>Email:</strong> ${email}</p>
+             <p><strong>Message:</strong><br/>This message is testing</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('✅ Email sent successfully');
+  } catch (error) {
+    console.error('❌ Failed to send email:', error);
+  }
+};
+
+
 app.post('/form_request', postLimiter, async (req, res) => {
   const { name, number, email, message } = req.body;
   try {
@@ -83,6 +111,7 @@ app.post('/form_request', postLimiter, async (req, res) => {
       [name, number, email, message]
     );
     res.status(201).json({ message: 'Form submitted', data: result.rows[0] });
+    sendEmail(name, email)
   } catch (err) {
     console.error('❌ Error in /form_request:', err.message);
     res.status(500).json({ error: 'Insert failed' });
