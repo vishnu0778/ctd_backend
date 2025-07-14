@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -79,20 +80,78 @@ app.get('/services_content', getLimiter, async (req, res) => {
 const sendEmail = async (name, email) => {
   try {
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS, // App password from Google
-        },
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS, // App password from Google
+      },
     });
 
+
+    const htmlTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Thank You - Creative Think Design</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      background: #ffffff;
+      max-width: 600px;
+      margin: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .message {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #333333;
+    }
+    .footer {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 12px;
+      color: #777777;
+    }
+    .brand {
+      font-weight: bold;
+      color: #3498db;
+    }
+  </style>
+</head>
+<body>
+  <div class="container"> 
+    <p class="message">
+      Hello <strong>{{name}}!</strong>,<br><br>
+      Thank you for showing interest in <strong>Creative Think Design</strong>. Our team has received your message and will reach out to you shortly.<br><br>
+      We appreciate your time and look forward to collaborating with you.
+    </p>
+    <div class="footer">
+      &copy; 2020 <a href="http://creativethinkdesign.com" target="_blank">Creative Think Design</a>. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+
+
     const mailOptions = {
-      from: `"${name}" <${email}>`,
-      to: 'creativethinkdesign4u@gmail.com', // Your email to receive messages
-      subject: "subject" || 'New Message',
-      html: `<p><strong>Name:</strong> ${name}</p>
-             <p><strong>Email:</strong> ${email}</p>
-             <p><strong>Message:</strong><br/>This message is testing</p>`,
+      from: `"Creative Think Design" <creativethinkdesign4u@gmail.com>`,
+      to: email, // Your email to receive messages
+      subject: "Creative Think Design - Thanks for Getting in Touch" || 'New Message',
+      // html: `<p><strong>Name:</strong> ${name}</p>
+      //        <p><strong>Email:</strong> ${email}</p>
+      //        <p><strong>Message:</strong><br/>This message is testing</p>`,
+      html: htmlTemplate.replace('{{name}}', name)
     };
 
     await transporter.sendMail(mailOptions);
@@ -119,7 +178,7 @@ app.post('/form_request', postLimiter, async (req, res) => {
 });
 
 // ✅ Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
